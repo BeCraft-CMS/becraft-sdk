@@ -5,7 +5,11 @@ SDK for interacting with the BeCraft backend APIs.
 ## Install
 
 ```bash
-npm install becraft-sdk
+# 最新版
+npm install github:BeCraft-CMS/becraft-sdk
+
+# バージョン指定（推奨）
+npm install github:BeCraft-CMS/becraft-sdk#v0.1.0
 ```
 
 ## Usage
