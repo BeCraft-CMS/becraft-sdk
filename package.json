@@ -29,6 +29,8 @@
     }
   },
   "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
     "jsdom": "^26.0.0"
   },
   "peerDependenciesMeta": {
@@ -52,10 +54,7 @@
     "test": "vitest",
     "test:watch": "vitest --watch"
   },
-  "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@openapitools/openapi-generator-cli": "^2.18.4",
