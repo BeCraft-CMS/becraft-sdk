@@ -215,7 +215,8 @@ const parseElement = (element: Element): ParsedHtmlNode => {
     case 'ul':
     case 'ol': {
       if (!isListTag(tagName)) return null;
-      const children = Array.from(element.querySelectorAll(':scope > li'))
+      const children = Array.from(element.children)
+        .filter((child): child is Element => child.tagName?.toLowerCase() === 'li')
         .map(parseElement)
         .filter(isNotNull);
       return ListNode.from(tagName, children);
