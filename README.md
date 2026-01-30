@@ -1,8 +1,8 @@
 # becraft-sdk
 
-SDK for interacting with the BeCraft backend APIs.
+BeCraft バックエンド API クライアントと HTML パーサー/レンダラーを提供する SDK です。
 
-## Install
+## インストール
 
 ```bash
 # 最新版
@@ -12,9 +12,9 @@ npm install github:BeCraft-CMS/becraft-sdk
 npm install github:BeCraft-CMS/becraft-sdk#v0.1.0
 ```
 
-## Usage
+## 使い方
 
-### Basic Client
+### 基本的なクライアント
 
 ```ts
 import { BeCraftClient } from 'becraft-sdk';
@@ -24,45 +24,45 @@ const client = new BeCraftClient({
   apiKey: 'your-api-key',
 });
 
-// Get contents
+// コンテンツを取得
 const contents = await client.content().get({
   limit: 10,
   offset: 0,
 });
 
-// Find a single content by ID
+// ID でコンテンツを検索
 const content = await client.content().find({
   contentId: 'content-uuid',
 });
 
-// Get categories
+// カテゴリを取得
 const categories = await client.category().get({});
 
-// Get tags
+// タグを取得
 const tags = await client.tag().get({});
 ```
 
-### HTML Rendering
+### HTML レンダリング
 
-The SDK provides utilities for parsing and rendering HTML content from the BeCraft editor.
+SDK は BeCraft エディタからの HTML コンテンツを解析・レンダリングするためのユーティリティを提供しています。
 
-#### Client-side (Browser)
+#### クライアントサイド（ブラウザ）
 
 ```tsx
 import { parseHtml, BeCraftHTMLRenderer } from 'becraft-sdk';
 
-// Parse HTML string to AST
+// HTML 文字列を AST に解析
 const ast = parseHtml('<p>Hello <strong>World</strong></p>');
 
-// Render with React component
+// React コンポーネントでレンダリング
 function ArticleContent({ html }: { html: string }) {
   return <BeCraftHTMLRenderer html={html} />;
 }
 ```
 
-#### Server-side (Node.js)
+#### サーバーサイド（Node.js）
 
-For SSR environments, use the `/server` entry point which uses jsdom:
+SSR 環境では、jsdom を使用する `/server` エントリポイントを使用してください：
 
 ```ts
 import { parseHtmlOnServer } from 'becraft-sdk/server';
@@ -70,44 +70,44 @@ import { parseHtmlOnServer } from 'becraft-sdk/server';
 const ast = parseHtmlOnServer('<p>Hello World</p>');
 ```
 
-Note: `jsdom` is a peer dependency for server-side parsing.
+注意: サーバーサイドでの解析には `jsdom` がピア依存関係として必要です。
 
 ## API
 
 ### BeCraftClient
 
-- `content()` - Content service
-  - `get(request)` - Get list of contents
-  - `find(request)` - Find single content by ID
-  - `count(request)` - Count contents
-- `category()` - Category service
-  - `get(request)` - Get list of categories
-  - `find(request)` - Find single category by ID
-- `tag()` - Tag service
-  - `get(request)` - Get list of tags
-  - `find(request)` - Find single tag by ID
-  - `count(request)` - Count tags
+- `content()` - コンテンツサービス
+  - `get(request)` - コンテンツ一覧を取得
+  - `find(request)` - ID でコンテンツを検索
+  - `count(request)` - コンテンツ数をカウント
+- `category()` - カテゴリサービス
+  - `get(request)` - カテゴリ一覧を取得
+  - `find(request)` - ID でカテゴリを検索
+- `tag()` - タグサービス
+  - `get(request)` - タグ一覧を取得
+  - `find(request)` - ID でタグを検索
+  - `count(request)` - タグ数をカウント
 
-### HTML Utilities
+### HTML ユーティリティ
 
-- `parseHtml(html: string)` - Parse HTML to AST (browser)
-- `parseHtmlOnServer(html: string)` - Parse HTML to AST (Node.js with jsdom)
-- `BeCraftHTMLRenderer` - React component for rendering HTML
+- `parseHtml(html: string)` - HTML を AST に解析（ブラウザ）
+- `parseHtmlOnServer(html: string)` - HTML を AST に解析（Node.js + jsdom）
+- `BeCraftHTMLRenderer` - HTML をレンダリングする React コンポーネント
 
-## Types
+## 型定義
 
 ```ts
 import type { Content, Category, Tag, ApiContentResponse } from 'becraft-sdk';
 ```
 
-## Scripts
+## スクリプト
 
-- `build` - Build the package
-- `dev` - Watch mode for development
-- `test` - Run tests
-- `lint` - Run ESLint
-- `format` - Format code with Prettier
+- `build` - パッケージをビルド
+- `dev` - 開発用ウォッチモード
+- `test` - テストを実行
+- `lint` - ESLint を実行
+- `format` - Prettier でコードをフォーマット
 
-## License
+## ライセンス
 
 MIT
