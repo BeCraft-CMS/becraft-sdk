@@ -6,10 +6,11 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/becraft-cms/becraft-sdk.git"
+    "url": "https://github.com/BeCraft-CMS/becraft-sdk.git"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "bugs": {
     "url": "https://github.com/BeCraft-CMS/becraft-sdk/issues"
