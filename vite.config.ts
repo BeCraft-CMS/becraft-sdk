@@ -15,12 +15,13 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         server: resolve(__dirname, 'src/server.ts'),
+        'server.worker': resolve(__dirname, 'src/server.worker.ts'),
       },
       formats: ['es'],
       fileName: (_format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime', 'jsdom'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'linkedom', 'linkedom/worker'],
     },
   },
 });
