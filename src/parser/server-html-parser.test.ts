@@ -1,7 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { parseHtmlOnServer } from './server-html-parser';
+import { JSDOM } from 'jsdom';
+import { makeParseHtmlOnServer } from './server-html-parser';
 
-describe('parseHtmlOnServer', () => {
+const parseHTML = (html: string) => {
+  const dom = new JSDOM(html);
+  return { document: dom.window.document };
+};
+
+const parseHtmlOnServer = makeParseHtmlOnServer(parseHTML);
+
+describe('makeParseHtmlOnServer', () => {
   it('should parse a simple paragraph', () => {
     const result = parseHtmlOnServer('<p>Hello World</p>');
 
