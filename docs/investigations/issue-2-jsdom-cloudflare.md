@@ -43,7 +43,45 @@ Cloudflare Workers は V8 isolate 上の純 ESM 実行環境で、Node.js の `v
 
 参考: [jsdom/jsdom#2427 "Using inside a worker"](https://github.com/jsdom/jsdom/issues/2427)、[Cloudflare Community "JSDOM in cloudflare worker?"](https://community.cloudflare.com/t/jsdom-in-cloudflare-worker/65769)
 
-### 3.1 本 SDK 側のアーキテクチャ上の好材料
+### 3.1 参考: V8 ランタイムでも `parseHtml`（クライアント側パーサ）は動かない
+
+「Cloudflare Workers は V8 上で動くから、ブラウザ用の `parseHtml`（`DOMParser` ベース）をそのまま使えばよいのでは？」という発想は直感的だが、**動かない**。
+
+#### 理由: V8 は JS エンジンであり、ブラウザ DOM API は別レイヤー
+
+| ランタイム | V8 (JS エンジン) | `window` / `document` / `DOMParser` |
+|-----------|:---------------:|:-----------------------------------:|
+| ブラウザ (Chrome / Edge 等) | ○ | ○（Blink/WebKit が提供） |
+| **Cloudflare Workers** | ○ | **× 提供されない** |
+| Deno | ○ | ×（`deno_dom` 等で別途導入が必要） |
+| Node.js | ○ | ×（jsdom / linkedom 等で別途導入） |
+| Bun | ○ | 部分対応（環境依存） |
+
+Cloudflare Workers の V8 isolate は **JavaScript エンジンのみ** を提供する環境で、ブラウザが追加で実装している DOM API（`window` / `document` / `DOMParser` 等）は同梱されない。代わりに Workers 独自の `HTMLRewriter` や、Web Platform API の一部（`fetch` / `Request` / `Response` / `URL` 等）が提供される。
+
+#### `parseHtml` の実装が早期 return する
+
+`src/parser/html-parser.ts` の `parseHtml` は以下のようにガードされている:
+
+```ts
+export const parseHtml = (html: string): ContentNode[] => {
+  if (typeof window === 'undefined' || typeof DOMParser === 'undefined') {
+    console.warn('DOMParser is not available. HTML parsing requires a browser environment.');
+    return [];
+  }
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  return parseBodyContent(doc.body);
+};
+```
+
+Workers では `window` も `DOMParser` もグローバルに存在しないため、このガードで早期リターンし、空配列とコンソールワーニングだけが返る。
+
+#### 結論
+
+Cloudflare Workers 上で HTML → AST 変換を実現するには、ランタイム側に DOM API を提供する外部ライブラリ（linkedom など）をバンドルする以外の方法がない。`parseHtml` / `parseHtmlOnServer` のどちらのパスでも、Workers で動かすには Workers 互換な DOM 実装が必須という結論は共通する。
+
+### 3.2 本 SDK 側のアーキテクチャ上の好材料
 
 `src/parser/html-parser.ts` の `parseBodyContent` は DOM 実装に非依存な最小インターフェースで定義されている:
 
