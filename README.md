@@ -56,9 +56,9 @@ function ArticleContent({ html }: { html: string }) {
 }
 ```
 
-#### サーバーサイド（Node.js）
+#### サーバーサイド（Node.js / Cloudflare Workers / Vercel Edge）
 
-SSR 環境では、jsdom を使用する `/server` エントリポイントを使用してください：
+SSR 環境では `/server` エントリポイントを使用してください。利用するランタイムに応じて、パッケージが自動的に適切なバンドルを解決します（`linkedom`: Node.js / `linkedom/worker`: Cloudflare Workers / Vercel Edge Runtime）。
 
 ```ts
 import { parseHtmlOnServer } from '@becraft/sdk/server';
@@ -66,7 +66,22 @@ import { parseHtmlOnServer } from '@becraft/sdk/server';
 const ast = parseHtmlOnServer('<p>Hello World</p>');
 ```
 
-注意: サーバーサイドでの解析には `jsdom` がピア依存関係として必要です。
+注意: サーバーサイドでの解析には `linkedom` がピア依存関係として必要です。
+
+```bash
+npm install linkedom
+```
+
+動作確認済みランタイム:
+
+| ランタイム                                                                            |   対応    | 解決される実装                        |
+| ------------------------------------------------------------------------------------- | :-------: | ------------------------------------- |
+| Node.js                                                                               |    ✅     | `linkedom`                            |
+| Cloudflare Workers（wrangler / `@cloudflare/vite-plugin` / `@opennextjs/cloudflare`） |    ✅     | `linkedom/worker`                     |
+| Vercel Edge Runtime（Next.js Edge）                                                   |    ✅     | `linkedom/worker`                     |
+| Bun / Deno                                                                            | ⚠️ 未検証 | `linkedom`（`import` フォールバック） |
+
+> **0.2.0 からの変更**: 以前は `jsdom` を使用していましたが、V8 isolate 環境で動作しないため `linkedom` に置き換えました。0.1.x からアップグレードする場合は `jsdom` を削除して `linkedom` を追加してください。
 
 ## API
 
@@ -87,7 +102,7 @@ const ast = parseHtmlOnServer('<p>Hello World</p>');
 ### HTML ユーティリティ
 
 - `parseHtml(html: string)` - HTML を AST に解析（ブラウザ）
-- `parseHtmlOnServer(html: string)` - HTML を AST に解析（Node.js + jsdom）
+- `parseHtmlOnServer(html: string)` - HTML を AST に解析（Node.js / Cloudflare Workers / Vercel Edge, linkedom ベース）
 - `BeCraftHTMLRenderer` - HTML をレンダリングする React コンポーネント
 
 ## 型定義
