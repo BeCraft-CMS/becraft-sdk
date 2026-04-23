@@ -33,9 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Internal file `src/client.ts` renamed to `src/becraft-client.ts` to
-  make its role (the `BeCraftClient` API client) explicit. The public
-  export surface via `@becraft/sdk` is unchanged.
 - The main entry `exports["."]` now uses the `default` condition instead
   of `require` to accurately reflect that this package is ESM-only.
 

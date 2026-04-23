@@ -1,4 +1,4 @@
-export * from './becraft-client';
+export * from './client';
 
 // API Types
 export type { ApiContentResponse } from './api/models/ApiContentResponse';
