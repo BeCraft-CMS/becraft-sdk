@@ -1,11 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import { makeParseHtmlOnServer } from './server-html-parser';
-
-const parseHTML = (html: string) => {
-  const dom = new JSDOM(html);
-  return { document: dom.window.document };
-};
 
 const parseHtmlOnServer = makeParseHtmlOnServer(parseHTML);
 

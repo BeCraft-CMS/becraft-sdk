@@ -1,6 +1,6 @@
 {
   "name": "@becraft/sdk",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "SDK for interacting with the BeCraft backend APIs.",
   "license": "MIT",
   "private": false,
@@ -28,17 +28,20 @@
     },
     "./server": {
       "types": "./dist/server.d.ts",
+      "workerd": "./dist/server.worker.js",
+      "edge-light": "./dist/server.worker.js",
+      "worker": "./dist/server.worker.js",
       "import": "./dist/server.js",
-      "require": "./dist/server.js"
+      "default": "./dist/server.js"
     }
   },
   "peerDependencies": {
+    "linkedom": "^0.18.0",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
-    "jsdom": "^26.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
-    "jsdom": {
+    "linkedom": {
       "optional": true
     }
   },
@@ -59,17 +62,16 @@
     "test": "vitest",
     "test:watch": "vitest --watch"
   },
-  "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@openapitools/openapi-generator-cli": "^2.18.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/jsdom": "^21.1.7",
     "@types/node": "^24.6.0",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.5",
@@ -77,10 +79,9 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
     "fixpack": "^4.0.0",
     "globals": "^16.4.0",
-    "jsdom": "^26.1.0",
+    "linkedom": "^0.18.12",
     "prettier": "^3.4.2",
     "tsx": "^4.21.0",
     "typescript": "<5.7.0",
