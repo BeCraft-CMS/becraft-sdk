@@ -1,0 +1,5 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "becraft-sdk-test",
+  "compatibility_date": "2026-03-10"
+}

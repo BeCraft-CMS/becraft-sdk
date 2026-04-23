@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseHtmlOnServer } from './server';
 
-describe('@becraft/sdk/server (Node.js entry — linkedom)', () => {
+describe('@becraft/sdk/server (Node.js entry - linkedom)', () => {
   it('parses a simple paragraph', () => {
     const result = parseHtmlOnServer('<p>Hello World</p>');
 

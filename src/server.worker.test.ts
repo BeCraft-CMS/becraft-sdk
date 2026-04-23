@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseHtmlOnServer } from './server.worker';
 
-describe('@becraft/sdk/server (Cloudflare Workers / Edge entry — linkedom/worker)', () => {
+describe('@becraft/sdk/server (Cloudflare Workers / Edge entry - linkedom/worker)', () => {
   it('parses a simple paragraph', () => {
     const result = parseHtmlOnServer('<p>Hello World</p>');
 
