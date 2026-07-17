@@ -196,6 +196,66 @@ describe('parseHtml', () => {
     });
   });
 
+  describe('bookmark', () => {
+    it('should parse a full bookmark card', () => {
+      const html =
+        '<a class="bookmark-card" href="https://example.com/article" rel="noopener noreferrer" target="_blank">' +
+        '<div class="bookmark-card__thumbnail"><img src="https://example.com/thumb.png" alt=""></div>' +
+        '<div class="bookmark-card__body">' +
+        '<p class="bookmark-card__title">Example Title</p>' +
+        '<p class="bookmark-card__description">Example description text</p>' +
+        '<div class="bookmark-card__footer">' +
+        '<img class="bookmark-card__favicon" src="https://example.com/favicon.ico" alt="">' +
+        '<span class="bookmark-card__url">https://example.com/article</span>' +
+        '</div></div></a>';
+      const result = parseHtml(html);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe('bookmark');
+      if (result[0].type === 'bookmark') {
+        expect(result[0].url).toBe('https://example.com/article');
+        expect(result[0].title).toBe('Example Title');
+        expect(result[0].description).toBe('Example description text');
+        expect(result[0].thumbnailUrl).toBe('https://example.com/thumb.png');
+        expect(result[0].faviconUrl).toBe('https://example.com/favicon.ico');
+      }
+    });
+
+    it('should parse a bookmark card without optional fields', () => {
+      const html =
+        '<a class="bookmark-card" href="https://example.com" rel="noopener noreferrer" target="_blank">' +
+        '<div class="bookmark-card__thumbnail"></div>' +
+        '<div class="bookmark-card__body">' +
+        '<div class="bookmark-card__footer">' +
+        '<span class="bookmark-card__url">https://example.com</span>' +
+        '</div></div></a>';
+      const result = parseHtml(html);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe('bookmark');
+      if (result[0].type === 'bookmark') {
+        expect(result[0].url).toBe('https://example.com');
+        expect(result[0].title).toBeUndefined();
+        expect(result[0].description).toBeUndefined();
+        expect(result[0].thumbnailUrl).toBeUndefined();
+        expect(result[0].faviconUrl).toBeUndefined();
+      }
+    });
+
+    it('should parse a plain anchor (bookmark fallback) as a link', () => {
+      // BE は OGP メタが無い bookmark をクラス無しのプレーンアンカーで出力する
+      const html =
+        '<a href="https://example.com" rel="noopener noreferrer" target="_blank">https://example.com</a>';
+      const result = parseHtml(html);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe('link');
+      if (result[0].type === 'link') {
+        expect(result[0].url).toBe('https://example.com');
+      }
+    });
+  });
+
   describe('linebreak', () => {
     it('should parse br tag in paragraph', () => {
       const html = '<p>Hello<br>World</p>';

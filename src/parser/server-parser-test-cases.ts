@@ -136,6 +136,30 @@ export const runServerParserTests = (
       expect(result[0].type).toBe('audio');
     });
 
+    it('should parse bookmark cards', () => {
+      const result = parseHtmlOnServer(
+        '<a class="bookmark-card" href="https://example.com/article" rel="noopener noreferrer" target="_blank">' +
+          '<div class="bookmark-card__thumbnail"><img src="https://example.com/thumb.png" alt=""></div>' +
+          '<div class="bookmark-card__body">' +
+          '<p class="bookmark-card__title">Example Title</p>' +
+          '<p class="bookmark-card__description">Example description</p>' +
+          '<div class="bookmark-card__footer">' +
+          '<img class="bookmark-card__favicon" src="https://example.com/favicon.ico" alt="">' +
+          '<span class="bookmark-card__url">https://example.com/article</span>' +
+          '</div></div></a>',
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe('bookmark');
+      if (result[0].type === 'bookmark') {
+        expect(result[0].url).toBe('https://example.com/article');
+        expect(result[0].title).toBe('Example Title');
+        expect(result[0].description).toBe('Example description');
+        expect(result[0].thumbnailUrl).toBe('https://example.com/thumb.png');
+        expect(result[0].faviconUrl).toBe('https://example.com/favicon.ico');
+      }
+    });
+
     it('should return empty array for empty string', () => {
       const result = parseHtmlOnServer('');
 
