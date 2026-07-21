@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MediaNode } from './nodes';
+import { MediaNode, BookmarkNode } from './nodes';
 
 describe('MediaNode', () => {
   describe('constructor', () => {
@@ -209,6 +209,45 @@ describe('MediaNode', () => {
       expect(node.items[0].key).toBe('');
       expect(node.items[0].alt).toBe('');
       expect(node.items[0].caption).toBe('');
+    });
+  });
+});
+
+describe('BookmarkNode', () => {
+  describe('constructor', () => {
+    it('should create BookmarkNode with url only', () => {
+      const node = new BookmarkNode({ url: 'https://example.com' });
+      expect(node.type).toBe('bookmark');
+      expect(node.url).toBe('https://example.com');
+      expect(node.title).toBeUndefined();
+      expect(node.description).toBeUndefined();
+      expect(node.thumbnailUrl).toBeUndefined();
+      expect(node.faviconUrl).toBeUndefined();
+    });
+
+    it('should create BookmarkNode with all fields', () => {
+      const node = new BookmarkNode({
+        url: 'https://example.com/article',
+        title: 'Title',
+        description: 'Description',
+        thumbnailUrl: 'https://example.com/thumb.png',
+        faviconUrl: 'https://example.com/favicon.ico',
+      });
+      expect(node.url).toBe('https://example.com/article');
+      expect(node.title).toBe('Title');
+      expect(node.description).toBe('Description');
+      expect(node.thumbnailUrl).toBe('https://example.com/thumb.png');
+      expect(node.faviconUrl).toBe('https://example.com/favicon.ico');
+    });
+  });
+
+  describe('from static method', () => {
+    it('should create BookmarkNode from input', () => {
+      const node = BookmarkNode.from({ url: 'https://example.com', title: 'Title' });
+      expect(node).toBeInstanceOf(BookmarkNode);
+      expect(node.type).toBe('bookmark');
+      expect(node.url).toBe('https://example.com');
+      expect(node.title).toBe('Title');
     });
   });
 });

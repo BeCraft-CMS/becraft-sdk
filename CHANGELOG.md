@@ -5,6 +5,19 @@ All notable changes to `@becraft/sdk` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Support for the BeCraft **埋め込みリンク (bookmark) ノード**. The parser now
+  recognizes the `<a class="bookmark-card">` markup emitted by the backend's
+  `bookmark_to_html` and produces a new `BookmarkNode` (`type: 'bookmark'`)
+  carrying `url` / `title` / `description` / `thumbnailUrl` / `faviconUrl`.
+  `BeCraftHTMLRenderer` renders it with the same `bookmark-card` BEM structure,
+  and a `bookmarkNodeRenderer` override is available via `HTMLRendererConfig`.
+  Bookmarks without OGP metadata fall back to a plain anchor, matching the
+  backend output.
+
 ## [0.2.0] - 2026-04-23
 
 ### ⚠ BREAKING CHANGES
@@ -49,6 +62,7 @@ Previous releases are not documented here. See the
 [GitHub Releases](https://github.com/BeCraft-CMS/becraft-sdk/releases)
 page for release artifacts.
 
+[unreleased]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/BeCraft-CMS/becraft-sdk/releases/tag/v0.1.2
 [#2]: https://github.com/BeCraft-CMS/becraft-sdk/issues/2

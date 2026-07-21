@@ -11,6 +11,7 @@ import {
   type AudioNode,
   type EmbedNode,
   type ObjectNode,
+  type BookmarkNode,
   type ParagraphNode,
   type QuoteNode,
   type HeadingNode,
@@ -57,6 +58,7 @@ export interface HTMLRendererConfig {
   audioNodeRenderer?: React.FC<NodeRendererProps<AudioNode>>;
   embedNodeRenderer?: React.FC<NodeRendererProps<EmbedNode>>;
   objectNodeRenderer?: React.FC<NodeRendererProps<ObjectNode>>;
+  bookmarkNodeRenderer?: React.FC<NodeRendererProps<BookmarkNode>>;
   paragraphNodeRenderer?: React.FC<NodeRendererProps<ParagraphNode>>;
   quoteNodeRenderer?: React.FC<NodeRendererProps<QuoteNode>>;
   headingNodeRenderer?: React.FC<NodeRendererProps<HeadingNode>>;
@@ -234,6 +236,45 @@ const ObjectNodeRenderer: React.FC<NodeRendererProps<ObjectNode>> = ({ node, con
       width={node.width}
       height={node.height}
     />
+  );
+};
+
+const BookmarkNodeRenderer: React.FC<NodeRendererProps<BookmarkNode>> = ({ node, config }) => {
+  if (config?.bookmarkNodeRenderer) {
+    return config.bookmarkNodeRenderer({ node, render: renderNode, config });
+  }
+
+  const href = sanitizeUrl(node.url);
+  const hasCard = !!(node.title || node.description || node.thumbnailUrl || node.faviconUrl);
+
+  // OGP メタが無い bookmark は BE 側でもプレーンアンカーにフォールバックするため、
+  // レンダラーでも同じ形（クラス無しの <a>）で出す。
+  if (!hasCard) {
+    return (
+      <a href={href} rel="noopener noreferrer" target="_blank">
+        {node.url}
+      </a>
+    );
+  }
+
+  // BE の bookmark_to_html と同じ BEM 構造を再現する。レイアウトはテナント側の
+  // CSS 契約（bookmark-card 系クラス）に委ねるため、ここではクラス名のみ担保する。
+  return (
+    <a className="bookmark-card" href={href} rel="noopener noreferrer" target="_blank">
+      <div className="bookmark-card__thumbnail">
+        {node.thumbnailUrl && <img src={node.thumbnailUrl} alt="" />}
+      </div>
+      <div className="bookmark-card__body">
+        {node.title && <p className="bookmark-card__title">{node.title}</p>}
+        {node.description && <p className="bookmark-card__description">{node.description}</p>}
+        <div className="bookmark-card__footer">
+          {node.faviconUrl && (
+            <img className="bookmark-card__favicon" src={node.faviconUrl} alt="" />
+          )}
+          <span className="bookmark-card__url">{node.url}</span>
+        </div>
+      </div>
+    </a>
   );
 };
 
@@ -511,6 +552,8 @@ const renderNode: RenderFn = (node, config) => {
       return <EmbedNodeRenderer node={node} render={renderNode} config={config} />;
     case 'object':
       return <ObjectNodeRenderer node={node} render={renderNode} config={config} />;
+    case 'bookmark':
+      return <BookmarkNodeRenderer node={node} render={renderNode} config={config} />;
 
     default:
       return null;

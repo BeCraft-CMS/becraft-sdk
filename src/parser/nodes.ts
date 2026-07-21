@@ -53,6 +53,14 @@ export type ObjectNodeInput = {
   height?: string;
 };
 
+export type BookmarkNodeInput = {
+  url: string;
+  title?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  faviconUrl?: string;
+};
+
 export type TableCellNodeInput = {
   headerState: 0 | 1 | 2 | 3;
   colSpan: number;
@@ -71,6 +79,7 @@ export type ContentNode =
   | AudioNode
   | EmbedNode
   | ObjectNode
+  | BookmarkNode
   | ParagraphNode
   | QuoteNode
   | HeadingNode
@@ -265,6 +274,27 @@ export class ObjectNode {
 
   static from(input: ObjectNodeInput): ObjectNode {
     return new ObjectNode(input);
+  }
+}
+
+export class BookmarkNode {
+  readonly type: 'bookmark' = 'bookmark';
+  readonly url: string;
+  readonly title?: string;
+  readonly description?: string;
+  readonly thumbnailUrl?: string;
+  readonly faviconUrl?: string;
+
+  constructor(input: BookmarkNodeInput) {
+    this.url = input.url;
+    this.title = input.title;
+    this.description = input.description;
+    this.thumbnailUrl = input.thumbnailUrl;
+    this.faviconUrl = input.faviconUrl;
+  }
+
+  static from(input: BookmarkNodeInput): BookmarkNode {
+    return new BookmarkNode(input);
   }
 }
 

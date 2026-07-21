@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { BeCraftHTMLRenderer } from './html-renderer';
 import { parseHtml } from '../parser/html-parser';
-import { MediaNode } from '../parser/nodes';
+import { MediaNode, BookmarkNode } from '../parser/nodes';
 
 describe('BeCraftHTMLRenderer', () => {
   it('should render HTML paragraph', () => {
@@ -347,6 +347,79 @@ describe('BeCraftHTMLRenderer', () => {
       const object = container.querySelector('object');
       expect(object).toBeTruthy();
       expect(object?.getAttribute('data')).toBe('#');
+    });
+  });
+
+  describe('bookmark element', () => {
+    const fullCardHtml =
+      '<a class="bookmark-card" href="https://example.com/article" rel="noopener noreferrer" target="_blank">' +
+      '<div class="bookmark-card__thumbnail"><img src="https://example.com/thumb.png" alt=""></div>' +
+      '<div class="bookmark-card__body">' +
+      '<p class="bookmark-card__title">Example Title</p>' +
+      '<p class="bookmark-card__description">Example description</p>' +
+      '<div class="bookmark-card__footer">' +
+      '<img class="bookmark-card__favicon" src="https://example.com/favicon.ico" alt="">' +
+      '<span class="bookmark-card__url">https://example.com/article</span>' +
+      '</div></div></a>';
+
+    it('should render a full bookmark card', () => {
+      const nodes = parseHtml(fullCardHtml);
+      const { container } = render(<BeCraftHTMLRenderer nodes={nodes} />);
+
+      const card = container.querySelector('a.bookmark-card');
+      expect(card).toBeTruthy();
+      expect(card?.getAttribute('href')).toBe('https://example.com/article');
+      expect(card?.getAttribute('target')).toBe('_blank');
+      expect(card?.getAttribute('rel')).toBe('noopener noreferrer');
+      expect(card?.querySelector('.bookmark-card__title')?.textContent).toBe('Example Title');
+      expect(card?.querySelector('.bookmark-card__description')?.textContent).toBe(
+        'Example description',
+      );
+      expect(card?.querySelector('.bookmark-card__thumbnail img')?.getAttribute('src')).toBe(
+        'https://example.com/thumb.png',
+      );
+      expect(card?.querySelector('.bookmark-card__favicon')?.getAttribute('src')).toBe(
+        'https://example.com/favicon.ico',
+      );
+      expect(card?.querySelector('.bookmark-card__url')?.textContent).toBe(
+        'https://example.com/article',
+      );
+    });
+
+    it('should render a bookmark without optional fields as a plain anchor', () => {
+      const node = BookmarkNode.from({ url: 'https://example.com' });
+      const { container } = render(<BeCraftHTMLRenderer nodes={[node]} />);
+
+      const anchor = container.querySelector('a');
+      expect(anchor).toBeTruthy();
+      expect(anchor?.classList.contains('bookmark-card')).toBe(false);
+      expect(anchor?.getAttribute('href')).toBe('https://example.com');
+      expect(anchor?.textContent).toBe('https://example.com');
+    });
+
+    it('should sanitize javascript: URLs in bookmark href', () => {
+      const node = BookmarkNode.from({ url: 'javascript:alert(1)', title: 'Evil' });
+      const { container } = render(<BeCraftHTMLRenderer nodes={[node]} />);
+
+      const card = container.querySelector('a.bookmark-card');
+      expect(card).toBeTruthy();
+      expect(card?.getAttribute('href')).toBe('#');
+    });
+
+    it('should use a custom bookmarkNodeRenderer when provided', () => {
+      const node = BookmarkNode.from({ url: 'https://example.com', title: 'Title' });
+      const { container } = render(
+        <BeCraftHTMLRenderer
+          nodes={[node]}
+          config={{
+            bookmarkNodeRenderer: ({ node }) => <div data-testid="custom">{node.url}</div>,
+          }}
+        />,
+      );
+
+      expect(container.querySelector('[data-testid="custom"]')?.textContent).toBe(
+        'https://example.com',
+      );
     });
   });
 

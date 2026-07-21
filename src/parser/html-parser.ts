@@ -13,6 +13,7 @@ import {
   AudioNode,
   EmbedNode,
   ObjectNode,
+  BookmarkNode,
   ParagraphNode,
   QuoteNode,
   HeadingNode,
@@ -190,6 +191,26 @@ const parseBeCraftMedia = (element: Element): MediaNode => {
   return MediaNode.from([], gridStyle);
 };
 
+const hasClass = (element: Element, className: string): boolean =>
+  (element.getAttribute('class') || '').split(/\s+/).includes(className);
+
+// BeCraft の埋め込みリンク (bookmark) は BE の bookmark_to_html が
+// `<a class="bookmark-card" ...>` で出力する。OGP メタ (title / description /
+// thumbnail / favicon) が 1 つも無い場合は BE 側でクラス無しのプレーン
+// アンカーにフォールバックするため、それは通常の LinkNode として扱えばよい。
+const parseBookmarkCard = (element: Element): BookmarkNode => {
+  const url = element.getAttribute('href') || '';
+  const title = element.querySelector('.bookmark-card__title')?.textContent?.trim() || undefined;
+  const description =
+    element.querySelector('.bookmark-card__description')?.textContent?.trim() || undefined;
+  const thumbnailUrl =
+    element.querySelector('.bookmark-card__thumbnail img')?.getAttribute('src') || undefined;
+  const faviconUrl =
+    element.querySelector('.bookmark-card__favicon')?.getAttribute('src') || undefined;
+
+  return BookmarkNode.from({ url, title, description, thumbnailUrl, faviconUrl });
+};
+
 const parseElement = (element: Element): ParsedHtmlNode => {
   const tagName = element.tagName.toLowerCase();
 
@@ -295,6 +316,9 @@ const parseElement = (element: Element): ParsedHtmlNode => {
     }
 
     case 'a': {
+      if (hasClass(element, 'bookmark-card')) {
+        return parseBookmarkCard(element);
+      }
       const url = element.getAttribute('href') || '';
       const children = Array.from(element.childNodes).flatMap((child) =>
         parseInlineContent(child, element),
