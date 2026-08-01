@@ -180,5 +180,38 @@ export const runServerParserTests = (
       expect(result).toHaveLength(1);
       expect(result[0].type).toBe('list');
     });
+    it('should keep the registered html of an embed tag region as-is', () => {
+      const result = parseHtmlOnServer(
+        '<!-- #embedtag -->' +
+          '<div class="hs-form-frame" data-form-id="xxx"></div>' +
+          '<script charset="utf-8" src="https://js.hsforms.net/forms/embed/v2.js"></script>' +
+          '<!-- /#embedtag -->',
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe('embedtag');
+      if (result[0].type === 'embedtag') {
+        expect(result[0].html).toContain('<script');
+        expect(result[0].html).toContain('data-form-id="xxx"');
+      }
+    });
+
+    it('should not let an embed tag region swallow the surrounding content', () => {
+      const result = parseHtmlOnServer(
+        '<p>before</p><!-- #embedtag --><div>embed</div><!-- /#embedtag --><p>after</p>',
+      );
+
+      expect(result).toHaveLength(3);
+      expect(result[0].type).toBe('paragraph');
+      expect(result[1].type).toBe('embedtag');
+      expect(result[2].type).toBe('paragraph');
+    });
+
+    it('should ignore an embed tag start marker without an end marker', () => {
+      const result = parseHtmlOnServer('<!-- #embedtag --><p>after</p>');
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe('paragraph');
+    });
   });
 };

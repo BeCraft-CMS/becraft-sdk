@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { BeCraftHTMLRenderer } from './html-renderer';
 import { parseHtml } from '../parser/html-parser';
-import { MediaNode, BookmarkNode } from '../parser/nodes';
+import { MediaNode, BookmarkNode, EmbedTagNode } from '../parser/nodes';
 
 describe('BeCraftHTMLRenderer', () => {
   it('should render HTML paragraph', () => {
@@ -573,6 +573,57 @@ describe('BeCraftHTMLRenderer', () => {
       const { container } = render(<BeCraftHTMLRenderer nodes={[singleNode, gridNode]} />);
       const images = container.querySelectorAll('img');
       expect(images).toHaveLength(3);
+    });
+  });
+  describe('embed tag element', () => {
+    const wrap = (html: string) => `<!-- #embedtag -->${html}<!-- /#embedtag -->`;
+
+    it('should render the registered html verbatim', () => {
+      const embed =
+        '<iframe src="https://www.youtube.com/embed/xxx" frameborder="0" ' +
+        'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+      const nodes = parseHtml(wrap(embed));
+      const { container } = render(<BeCraftHTMLRenderer nodes={nodes} />);
+
+      const iframe = container.querySelector('iframe');
+      expect(iframe).toBeTruthy();
+      expect(iframe?.getAttribute('src')).toBe('https://www.youtube.com/embed/xxx');
+      expect(iframe?.getAttribute('frameborder')).toBe('0');
+      expect(iframe?.getAttribute('referrerpolicy')).toBe('strict-origin-when-cross-origin');
+      expect(iframe?.hasAttribute('allowfullscreen')).toBe(true);
+    });
+
+    it('should render multiple top level elements of one region', () => {
+      const nodes = parseHtml(wrap('<div class="a">a</div><div class="b">b</div>'));
+      const { container } = render(<BeCraftHTMLRenderer nodes={nodes} />);
+
+      expect(container.querySelector('.a')?.textContent).toBe('a');
+      expect(container.querySelector('.b')?.textContent).toBe('b');
+    });
+
+    it('should not sanitize urls inside an embed tag', () => {
+      // 埋め込みタグは登録された html をそのまま通す仕様のため、
+      // 他ノードのような sanitizeUrl を適用しない
+      const node = EmbedTagNode.from({ html: '<a href="javascript:alert(1)">x</a>' });
+      const { container } = render(<BeCraftHTMLRenderer nodes={[node]} />);
+
+      expect(container.querySelector('a')?.getAttribute('href')).toBe('javascript:alert(1)');
+    });
+
+    it('should use a custom embedTagNodeRenderer when configured', () => {
+      const node = EmbedTagNode.from({ html: '<div>raw</div>' });
+      const { container } = render(
+        <BeCraftHTMLRenderer
+          nodes={[node]}
+          config={{
+            embedTagNodeRenderer: ({ node: n }) => <section data-html={n.html}>custom</section>,
+          }}
+        />,
+      );
+
+      const section = container.querySelector('section');
+      expect(section?.textContent).toBe('custom');
+      expect(section?.getAttribute('data-html')).toBe('<div>raw</div>');
     });
   });
 });

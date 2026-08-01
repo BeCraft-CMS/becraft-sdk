@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MediaNode, BookmarkNode } from './nodes';
+import { MediaNode, BookmarkNode, EmbedTagNode } from './nodes';
 
 describe('MediaNode', () => {
   describe('constructor', () => {
@@ -248,6 +248,34 @@ describe('BookmarkNode', () => {
       expect(node.type).toBe('bookmark');
       expect(node.url).toBe('https://example.com');
       expect(node.title).toBe('Title');
+    });
+  });
+});
+
+describe('EmbedTagNode', () => {
+  describe('constructor', () => {
+    it('should keep the registered html as-is', () => {
+      const html = '<iframe src="https://www.youtube.com/embed/x" frameborder="0"></iframe>';
+      const node = new EmbedTagNode({ html });
+
+      expect(node.type).toBe('embedtag');
+      expect(node.html).toBe(html);
+    });
+
+    it('should accept an empty html', () => {
+      const node = new EmbedTagNode({ html: '' });
+
+      expect(node.html).toBe('');
+    });
+  });
+
+  describe('from static method', () => {
+    it('should create EmbedTagNode from input', () => {
+      const node = EmbedTagNode.from({ html: '<div>embed</div>' });
+
+      expect(node).toBeInstanceOf(EmbedTagNode);
+      expect(node.type).toBe('embedtag');
+      expect(node.html).toBe('<div>embed</div>');
     });
   });
 });

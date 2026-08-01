@@ -53,6 +53,10 @@ export type ObjectNodeInput = {
   height?: string;
 };
 
+export type EmbedTagNodeInput = {
+  html: string;
+};
+
 export type BookmarkNodeInput = {
   url: string;
   title?: string;
@@ -78,6 +82,7 @@ export type ContentNode =
   | VideoNode
   | AudioNode
   | EmbedNode
+  | EmbedTagNode
   | ObjectNode
   | BookmarkNode
   | ParagraphNode
@@ -253,6 +258,22 @@ export class EmbedNode {
 
   static from(input: EmbedNodeInput): EmbedNode {
     return new EmbedNode(input);
+  }
+}
+
+// 埋め込みタグ (BeCraft の EmbedTagValue) の区間。登録された HTML をそのまま
+// 表示する仕様のため、タグや属性を解釈せず原文の文字列として保持する。
+// HTML の <embed> を表す EmbedNode とは別物。
+export class EmbedTagNode {
+  readonly type: 'embedtag' = 'embedtag';
+  readonly html: string;
+
+  constructor(input: EmbedTagNodeInput) {
+    this.html = input.html;
+  }
+
+  static from(input: EmbedTagNodeInput): EmbedTagNode {
+    return new EmbedTagNode(input);
   }
 }
 
