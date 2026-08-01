@@ -12,6 +12,7 @@ import {
   VideoNode,
   AudioNode,
   EmbedNode,
+  EmbedTagNode,
   ObjectNode,
   BookmarkNode,
   ParagraphNode,
@@ -49,9 +50,10 @@ const GRID_TEMPLATE_COLS_REGEX = /grid-template-columns:\s*([^;]+)/;
 
 const isNotNull = <T>(value: T | null): value is T => value !== null;
 // Use numeric constants for Node type checks to work in both browser and Node.js environments
-// Node.ELEMENT_NODE = 1, Node.TEXT_NODE = 3
+// Node.ELEMENT_NODE = 1, Node.TEXT_NODE = 3, Node.COMMENT_NODE = 8
 const isDomElement = (node: { nodeType: number }): node is Element => node.nodeType === 1;
 const isDomTextNode = (node: { nodeType: number }): node is Text => node.nodeType === 3;
+const isDomCommentNode = (node: { nodeType: number }): node is Comment => node.nodeType === 8;
 const isListTag = (tag: string): tag is 'ul' | 'ol' => tag === 'ul' || tag === 'ol';
 const isHeadingTag = (tag: string): tag is HeadingTag =>
   tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4' || tag === 'h5' || tag === 'h6';
@@ -464,6 +466,24 @@ type ParseableElement = {
   childNodes: NodeListOf<ChildNode>;
 };
 
+// 配信 API の html は全セクションを連結した 1 本の文字列になるため、埋め込みタグの
+// 区間は BeCraft の renderer が HTML コメントの対で囲って送ってくる。ここで比較するのは
+// コメントの中身なので、`<!--` `-->` を除いた本体だけを定数に持つ。
+// 対応: apps/serverside/interface/src/renderer/embed_tag.rs
+const EMBED_TAG_START_MARKER = '#embedtag';
+const EMBED_TAG_END_MARKER = '/#embedtag';
+
+const getCommentMarker = (node: ChildNode): string | null =>
+  isDomCommentNode(node) ? (node.data || '').trim() : null;
+
+// 区間内のノードを原文の HTML に戻す。埋め込みタグはタグ / 属性を一切落とさない
+// 仕様のため、パース結果ではなく元の文字列表現を復元する。
+const serializeNode = (node: ChildNode): string => {
+  if (isDomElement(node)) return node.outerHTML;
+  if (isDomCommentNode(node)) return `<!--${node.data}-->`;
+  return node.textContent || '';
+};
+
 /**
  * Parse body element's child nodes into ContentNode array.
  * This is the core parsing function used by both client and server parsers.
@@ -473,17 +493,43 @@ type ParseableElement = {
  * @internal
  */
 export const parseBodyContent = (body: ParseableElement): ContentNode[] => {
-  return Array.from(body.childNodes).flatMap((child) => {
+  const children = Array.from(body.childNodes);
+  const nodes: ContentNode[] = [];
+
+  for (let index = 0; index < children.length; index++) {
+    const child = children[index];
+
+    if (getCommentMarker(child) === EMBED_TAG_START_MARKER) {
+      const endIndex = children.findIndex(
+        (node, i) => i > index && getCommentMarker(node) === EMBED_TAG_END_MARKER,
+      );
+
+      // 終了マーカーが無いと区間の終端が決まらない。以降の本文まで埋め込みタグに
+      // 飲まれるのを避けるため、開始マーカーだけの場合は区間として扱わない。
+      if (endIndex !== -1) {
+        const html = children
+          .slice(index + 1, endIndex)
+          .map(serializeNode)
+          .join('');
+        nodes.push(EmbedTagNode.from({ html }));
+        index = endIndex;
+        continue;
+      }
+    }
+
     if (isDomElement(child)) {
       const parsed = parseElement(child);
-      return parsed ? [parsed] : [];
+      if (parsed) nodes.push(parsed);
+      continue;
     }
+
     if (isDomTextNode(child)) {
       const text = child.textContent?.trim();
-      return text ? [TextNode.from(text, [])] : [];
+      if (text) nodes.push(TextNode.from(text, []));
     }
-    return [];
-  });
+  }
+
+  return nodes;
 };
 
 /**
@@ -502,7 +548,13 @@ export const parseHtml = (html: string): ContentNode[] => {
   }
 
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  // body を明示せずに渡すと、先頭の HTML コメントが html / head 側に移されて
+  // body から消える。埋め込みタグの区間マーカーはコメントなので、
+  // サーバー側パーサーと同じく body で囲ってから解析する。
+  const doc = parser.parseFromString(
+    `<!DOCTYPE html><html><body>${html}</body></html>`,
+    'text/html',
+  );
 
   return parseBodyContent(doc.body);
 };

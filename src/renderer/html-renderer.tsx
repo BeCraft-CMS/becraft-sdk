@@ -10,6 +10,7 @@ import {
   type VideoNode,
   type AudioNode,
   type EmbedNode,
+  type EmbedTagNode,
   type ObjectNode,
   type BookmarkNode,
   type ParagraphNode,
@@ -57,6 +58,7 @@ export interface HTMLRendererConfig {
   videoNodeRenderer?: React.FC<NodeRendererProps<VideoNode>>;
   audioNodeRenderer?: React.FC<NodeRendererProps<AudioNode>>;
   embedNodeRenderer?: React.FC<NodeRendererProps<EmbedNode>>;
+  embedTagNodeRenderer?: React.FC<NodeRendererProps<EmbedTagNode>>;
   objectNodeRenderer?: React.FC<NodeRendererProps<ObjectNode>>;
   bookmarkNodeRenderer?: React.FC<NodeRendererProps<BookmarkNode>>;
   paragraphNodeRenderer?: React.FC<NodeRendererProps<ParagraphNode>>;
@@ -221,6 +223,21 @@ const EmbedNodeRenderer: React.FC<NodeRendererProps<EmbedNode>> = ({ node, confi
       height={node.height}
     />
   );
+};
+
+const EmbedTagNodeRenderer: React.FC<NodeRendererProps<EmbedTagNode>> = ({ node, config }) => {
+  if (config?.embedTagNodeRenderer) {
+    return config.embedTagNodeRenderer({ node, render: renderNode, config });
+  }
+
+  // 「登録した HTML がそのまま表示される」という仕様のため、サニタイズも
+  // 属性の絞り込みもせず原文を挿入する。埋め込み値の安全性は BeCraft の
+  // 編集権限で担保する前提。
+  //
+  // なお innerHTML 経由で挿入された <script> は HTML 仕様上実行されない。
+  // script の実行が要る埋め込み (HubSpot フォーム等) を扱うテナントは
+  // embedTagNodeRenderer で独自に処理する。
+  return <div dangerouslySetInnerHTML={{ __html: node.html }} />;
 };
 
 const ObjectNodeRenderer: React.FC<NodeRendererProps<ObjectNode>> = ({ node, config }) => {
@@ -550,6 +567,8 @@ const renderNode: RenderFn = (node, config) => {
       return <AudioNodeRenderer node={node} render={renderNode} config={config} />;
     case 'embed':
       return <EmbedNodeRenderer node={node} render={renderNode} config={config} />;
+    case 'embedtag':
+      return <EmbedTagNodeRenderer node={node} render={renderNode} config={config} />;
     case 'object':
       return <ObjectNodeRenderer node={node} render={renderNode} config={config} />;
     case 'bookmark':

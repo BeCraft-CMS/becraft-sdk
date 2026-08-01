@@ -948,3 +948,90 @@ describe('data-becraft-media', () => {
     });
   });
 });
+
+describe('embed tag', () => {
+  // BeCraft の renderer は埋め込みタグの区間を HTML コメントの対で囲って配信する。
+  // 対応: apps/serverside/interface/src/renderer/embed_tag.rs
+  const wrap = (html: string) => `<!-- #embedtag -->${html}<!-- /#embedtag -->`;
+
+  it('should keep every tag and attribute of the registered html', () => {
+    // ホワイトリスト方式では frameborder / referrerpolicy が落ちていた
+    const embed =
+      '<iframe width="560" height="315" src="https://www.youtube.com/embed/xxx" ' +
+      'title="YouTube video player" frameborder="0" ' +
+      'allow="accelerometer; autoplay; clipboard-write" ' +
+      'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+    const result = parseHtml(wrap(embed));
+
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe('embedtag');
+    if (result[0].type === 'embedtag') {
+      expect(result[0].html).toContain('frameborder="0"');
+      expect(result[0].html).toContain('referrerpolicy="strict-origin-when-cross-origin"');
+      expect(result[0].html).toContain('src="https://www.youtube.com/embed/xxx"');
+    }
+  });
+
+  it('should keep script tags that the tag parser drops', () => {
+    // HubSpot のようなスクリプト方式の埋め込みは従来 1 ノードも残らなかった
+    const embed =
+      '<div class="hs-form-frame" data-region="na1" data-form-id="xxx"></div>' +
+      '<script charset="utf-8" src="https://js.hsforms.net/forms/embed/v2.js"></script>';
+    const result = parseHtml(wrap(embed));
+
+    expect(result).toHaveLength(1);
+    if (result[0].type === 'embedtag') {
+      expect(result[0].html).toContain('<script');
+      expect(result[0].html).toContain('data-form-id="xxx"');
+      expect(result[0].html).toContain('class="hs-form-frame"');
+    }
+  });
+
+  it('should treat multiple top level elements as one region', () => {
+    const result = parseHtml(wrap('<div>a</div><div>b</div>'));
+
+    expect(result).toHaveLength(1);
+    if (result[0].type === 'embedtag') {
+      expect(result[0].html).toBe('<div>a</div><div>b</div>');
+    }
+  });
+
+  it('should not swallow the surrounding content', () => {
+    const result = parseHtml(`<p>before</p>${wrap('<div>embed</div>')}<p>after</p>`);
+
+    expect(result).toHaveLength(3);
+    expect(result[0].type).toBe('paragraph');
+    expect(result[1].type).toBe('embedtag');
+    expect(result[2].type).toBe('paragraph');
+  });
+
+  it('should parse consecutive regions independently', () => {
+    const result = parseHtml(`${wrap('<div>first</div>')}${wrap('<div>second</div>')}`);
+
+    expect(result).toHaveLength(2);
+    if (result[0].type === 'embedtag') expect(result[0].html).toBe('<div>first</div>');
+    if (result[1].type === 'embedtag') expect(result[1].html).toBe('<div>second</div>');
+  });
+
+  it('should ignore a start marker without an end marker', () => {
+    // 終端が決まらないため区間にはせず、後続の本文をそのままパースする
+    const result = parseHtml('<!-- #embedtag --><p>after</p>');
+
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe('paragraph');
+  });
+
+  it('should produce an empty html for an empty region', () => {
+    const result = parseHtml(wrap(''));
+
+    expect(result).toHaveLength(1);
+    if (result[0].type === 'embedtag') expect(result[0].html).toBe('');
+  });
+
+  it('should ignore unrelated html comments', () => {
+    const result = parseHtml('<!-- just a comment --><p>text</p>');
+
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe('paragraph');
+  });
+});

@@ -105,6 +105,26 @@ npm install linkedom
 - `parseHtmlOnServer(html: string)` - HTML を AST に解析（Node.js / Cloudflare Workers / Vercel Edge, linkedom ベース）
 - `BeCraftHTMLRenderer` - HTML をレンダリングする React コンポーネント
 
+### 埋め込みタグ
+
+BeCraft の埋め込みタグセクションに登録された HTML は、タグや属性を一切落とさずそのまま描画される。
+配信 API の html では区間が HTML コメント（`<!-- #embedtag -->` / `<!-- /#embedtag -->`）で囲まれており、
+パーサーはこの区間を `EmbedTagNode`（原文の HTML を保持）として扱う。
+
+デフォルトの描画は `<div dangerouslySetInnerHTML>` による原文の挿入となる。
+`<script>` は HTML 仕様上 `innerHTML` 経由では実行されないため、
+スクリプトの実行が必要な埋め込み（HubSpot フォーム等）を扱う場合は
+`embedTagNodeRenderer` で独自に処理する。
+
+```tsx
+<BeCraftHTMLRenderer
+  nodes={nodes}
+  config={{
+    embedTagNodeRenderer: ({ node }) => <MyEmbed html={node.html} />,
+  }}
+/>
+```
+
 ## 型定義
 
 ```ts
