@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Every `BeCraftClient` method accepts an optional second argument
+  `options: BeCraftRequestOptions` with `signal?: AbortSignal`. Aborting the
+  signal (e.g. `AbortSignal.timeout(ms)`) cancels the underlying HTTP request
+  instead of only abandoning the promise. The promise rejects with the
+  signal's reason (`AbortError` / `TimeoutError`), as `fetch` does, rather than
+  a `FetchError`.
+- `ResponseError` and `FetchError` are exported from the package entry so that
+  callers can distinguish non-2xx responses (`response.status`) from requests
+  that never got a response.
+
 ## [0.3.0] - 2026-11-10
 
 ### ⚠ BREAKING CHANGES
