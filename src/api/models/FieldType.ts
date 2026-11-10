@@ -21,6 +21,7 @@ export const FieldType = {
   Media: 'Media',
   EmbedTag: 'EmbedTag',
   CustomSection: 'CustomSection',
+  TableOfContents: 'TableOfContents',
 } as const;
 export type FieldType = (typeof FieldType)[keyof typeof FieldType];
 

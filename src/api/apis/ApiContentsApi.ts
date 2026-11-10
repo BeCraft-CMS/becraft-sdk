@@ -88,7 +88,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/contents/count`;
+    let urlPath = `/api/v1/contents/count`;
 
     const response = await this.request(
       {
@@ -136,7 +136,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json';
 
-    let urlPath = `/api/contents`;
+    let urlPath = `/api/v1/contents`;
 
     const response = await this.request(
       {
@@ -181,7 +181,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/contents/{id}`;
+    let urlPath = `/api/v1/contents/{id}`;
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])));
 
     const response = await this.request(
@@ -227,7 +227,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/contents/{id}`;
+    let urlPath = `/api/v1/contents/{id}`;
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])));
 
     const response = await this.request(
@@ -307,7 +307,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/contents`;
+    let urlPath = `/api/v1/contents`;
 
     const response = await this.request(
       {
@@ -360,7 +360,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json';
 
-    let urlPath = `/api/contents/{id}`;
+    let urlPath = `/api/v1/contents/{id}`;
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])));
 
     const response = await this.request(

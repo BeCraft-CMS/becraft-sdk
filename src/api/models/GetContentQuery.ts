@@ -48,12 +48,6 @@ export interface GetContentQuery {
    * @type {string}
    * @memberof GetContentQuery
    */
-  relationSourceContentId?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof GetContentQuery
-   */
   statusKeys?: string | null;
   /**
    *
@@ -88,8 +82,6 @@ export function GetContentQueryFromJSONTyped(
     keyword: json['keyword'] == null ? undefined : json['keyword'],
     limit: json['limit'],
     offset: json['offset'],
-    relationSourceContentId:
-      json['relation_source_content_id'] == null ? undefined : json['relation_source_content_id'],
     statusKeys: json['status_keys'] == null ? undefined : json['status_keys'],
     tags: json['tags'] == null ? undefined : json['tags'],
   };
@@ -112,7 +104,6 @@ export function GetContentQueryToJSONTyped(
     keyword: value['keyword'],
     limit: value['limit'],
     offset: value['offset'],
-    relation_source_content_id: value['relationSourceContentId'],
     status_keys: value['statusKeys'],
     tags: value['tags'],
   };

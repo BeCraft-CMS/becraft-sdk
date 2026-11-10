@@ -64,6 +64,12 @@ export interface ApiContentResponse {
   createdBy: CreatedBy;
   /**
    *
+   * @type {{ [key: string]: string; }}
+   * @memberof ApiContentResponse
+   */
+  customParameters: { [key: string]: string };
+  /**
+   *
    * @type {string}
    * @memberof ApiContentResponse
    */
@@ -161,6 +167,7 @@ export function instanceOfApiContentResponse(value: object): value is ApiContent
   if (!('categories' in value) || value['categories'] === undefined) return false;
   if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
   if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
+  if (!('customParameters' in value) || value['customParameters'] === undefined) return false;
   if (!('draftKey' in value) || value['draftKey'] === undefined) return false;
   if (!('html' in value) || value['html'] === undefined) return false;
   if (!('id' in value) || value['id'] === undefined) return false;
@@ -190,6 +197,7 @@ export function ApiContentResponseFromJSONTyped(
     categories: (json['categories'] as Array<any>).map(ContentCategoryFromJSON),
     createdAt: json['created_at'],
     createdBy: CreatedByFromJSON(json['created_by']),
+    customParameters: json['custom_parameters'],
     customUrl: json['custom_url'] == null ? undefined : json['custom_url'],
     draftKey: json['draft_key'],
     html: json['html'],
@@ -224,6 +232,7 @@ export function ApiContentResponseToJSONTyped(
     categories: (value['categories'] as Array<any>).map(ContentCategoryToJSON),
     created_at: value['createdAt'],
     created_by: CreatedByToJSON(value['createdBy']),
+    custom_parameters: value['customParameters'],
     custom_url: value['customUrl'],
     draft_key: value['draftKey'],
     html: value['html'],

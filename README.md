@@ -26,17 +26,20 @@ const contents = await client.content().get({
   offset: 0,
 });
 
-// ID でコンテンツを検索
+// ID でコンテンツを検索（下書きを取得する場合は draftKey を渡す）
 const content = await client.content().find({
-  contentId: 'content-uuid',
+  id: 'content-uuid',
 });
 
 // カテゴリを取得
-const categories = await client.category().get({});
+const categories = await client.category().get({ limit: 10, offset: 0 });
 
 // タグを取得
-const tags = await client.tag().get({});
+const tags = await client.tag().get({ limit: 10, offset: 0 });
 ```
+
+`baseUrl` には BeCraft のオリジン（例: `https://your-becraft-api.com`）を指定する。
+SDK は配信 API の `/api/v1/contents` などのパスを付与してリクエストする。
 
 ### HTML レンダリング
 

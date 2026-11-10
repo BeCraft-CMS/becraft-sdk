@@ -27,6 +27,12 @@ export interface UpdateContentJson {
   categoryIds?: Array<string> | null;
   /**
    *
+   * @type {{ [key: string]: string; }}
+   * @memberof UpdateContentJson
+   */
+  customParameters?: { [key: string]: string };
+  /**
+   *
    * @type {string}
    * @memberof UpdateContentJson
    */
@@ -89,6 +95,7 @@ export function UpdateContentJsonFromJSONTyped(
   }
   return {
     categoryIds: json['category_ids'] == null ? undefined : json['category_ids'],
+    customParameters: json['custom_parameters'] == null ? undefined : json['custom_parameters'],
     customUrl: json['custom_url'] == null ? undefined : json['custom_url'],
     fields: json['fields'] == null ? undefined : json['fields'],
     relatedContentIds:
@@ -114,6 +121,7 @@ export function UpdateContentJsonToJSONTyped(
 
   return {
     category_ids: value['categoryIds'],
+    custom_parameters: value['customParameters'],
     custom_url: value['customUrl'],
     fields: value['fields'],
     related_content_ids: value['relatedContentIds'],

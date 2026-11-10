@@ -68,7 +68,7 @@ export class ApiTagsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/tags/count`;
+    let urlPath = `/api/v1/tags/count`;
 
     const response = await this.request(
       {
@@ -116,7 +116,7 @@ export class ApiTagsApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json';
 
-    let urlPath = `/api/tags`;
+    let urlPath = `/api/v1/tags`;
 
     const response = await this.request(
       {
@@ -159,7 +159,7 @@ export class ApiTagsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/tags/{id}`;
+    let urlPath = `/api/v1/tags/{id}`;
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])));
 
     const response = await this.request(
@@ -201,7 +201,7 @@ export class ApiTagsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/tags/{id}`;
+    let urlPath = `/api/v1/tags/{id}`;
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])));
 
     const response = await this.request(
@@ -263,7 +263,7 @@ export class ApiTagsApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
-    let urlPath = `/api/tags`;
+    let urlPath = `/api/v1/tags`;
 
     const response = await this.request(
       {
@@ -314,7 +314,7 @@ export class ApiTagsApi extends runtime.BaseAPI {
 
     headerParameters['Content-Type'] = 'application/json';
 
-    let urlPath = `/api/tags/{id}`;
+    let urlPath = `/api/v1/tags/{id}`;
     urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])));
 
     const response = await this.request(
