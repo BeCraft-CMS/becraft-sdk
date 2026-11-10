@@ -40,12 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   embeds that need `<script>` execution. A start marker without a matching end
   marker is not treated as a region.
 
-### Removed
-
-- `relationSourceContentId` from the `GetContentQuery` model, which the
-  backend no longer declares. The `relationSourceContentId` request
-  parameter of `content().get()` / `content().count()` is unchanged.
-
 ## [0.2.0] - 2026-04-23
 
 ### ⚠ BREAKING CHANGES
