@@ -27,6 +27,12 @@ export interface CreateContentJson {
   categoryIds: Array<string>;
   /**
    *
+   * @type {{ [key: string]: string; }}
+   * @memberof CreateContentJson
+   */
+  customParameters?: { [key: string]: string };
+  /**
+   *
    * @type {string}
    * @memberof CreateContentJson
    */
@@ -94,6 +100,7 @@ export function CreateContentJsonFromJSONTyped(
   }
   return {
     categoryIds: json['category_ids'],
+    customParameters: json['custom_parameters'] == null ? undefined : json['custom_parameters'],
     customUrl: json['custom_url'] == null ? undefined : json['custom_url'],
     fields: json['fields'],
     relatedContentIds: json['related_content_ids'],
@@ -118,6 +125,7 @@ export function CreateContentJsonToJSONTyped(
 
   return {
     category_ids: value['categoryIds'],
+    custom_parameters: value['customParameters'],
     custom_url: value['customUrl'],
     fields: value['fields'],
     related_content_ids: value['relatedContentIds'],

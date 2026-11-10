@@ -1,6 +1,6 @@
 {
   "name": "@becraft/sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "SDK for interacting with the BeCraft backend APIs.",
   "license": "MIT",
   "private": false,

@@ -65,6 +65,12 @@ export interface Content {
   createdBy: CreatedBy;
   /**
    *
+   * @type {{ [key: string]: string; }}
+   * @memberof Content
+   */
+  customParameters: { [key: string]: string };
+  /**
+   *
    * @type {string}
    * @memberof Content
    */
@@ -162,6 +168,7 @@ export function instanceOfContent(value: object): value is Content {
   if (!('categories' in value) || value['categories'] === undefined) return false;
   if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
   if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
+  if (!('customParameters' in value) || value['customParameters'] === undefined) return false;
   if (!('draftKey' in value) || value['draftKey'] === undefined) return false;
   if (!('fields' in value) || value['fields'] === undefined) return false;
   if (!('id' in value) || value['id'] === undefined) return false;
@@ -188,6 +195,7 @@ export function ContentFromJSONTyped(json: any, ignoreDiscriminator: boolean): C
     categories: (json['categories'] as Array<any>).map(ContentCategoryFromJSON),
     createdAt: json['created_at'],
     createdBy: CreatedByFromJSON(json['created_by']),
+    customParameters: json['custom_parameters'],
     customUrl: json['custom_url'] == null ? undefined : json['custom_url'],
     draftKey: json['draft_key'],
     fields: (json['fields'] as Array<any>).map(FieldFromJSON),
@@ -222,6 +230,7 @@ export function ContentToJSONTyped(
     categories: (value['categories'] as Array<any>).map(ContentCategoryToJSON),
     created_at: value['createdAt'],
     created_by: CreatedByToJSON(value['createdBy']),
+    custom_parameters: value['customParameters'],
     custom_url: value['customUrl'],
     draft_key: value['draftKey'],
     fields: (value['fields'] as Array<any>).map(FieldToJSON),

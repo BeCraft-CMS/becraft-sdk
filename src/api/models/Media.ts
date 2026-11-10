@@ -24,6 +24,30 @@ export interface Media {
    * @type {string}
    * @memberof Media
    */
+  alt?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof Media
+   */
+  caption?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof Media
+   */
+  _class?: string | null;
+  /**
+   *
+   * @type {number}
+   * @memberof Media
+   */
+  height?: number | null;
+  /**
+   *
+   * @type {string}
+   * @memberof Media
+   */
   key: string;
   /**
    *
@@ -49,6 +73,12 @@ export interface Media {
    * @memberof Media
    */
   url: string;
+  /**
+   *
+   * @type {number}
+   * @memberof Media
+   */
+  width?: number | null;
 }
 
 /**
@@ -70,11 +100,16 @@ export function MediaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Med
     return json;
   }
   return {
+    alt: json['alt'] == null ? undefined : json['alt'],
+    caption: json['caption'] == null ? undefined : json['caption'],
+    _class: json['class'] == null ? undefined : json['class'],
+    height: json['height'] == null ? undefined : json['height'],
     key: json['key'],
     lastModified: json['last_modified'] == null ? undefined : json['last_modified'],
     size: json['size'],
     storageClass: json['storage_class'] == null ? undefined : json['storage_class'],
     url: json['url'],
+    width: json['width'] == null ? undefined : json['width'],
   };
 }
 
@@ -88,10 +123,15 @@ export function MediaToJSONTyped(value?: Media | null, ignoreDiscriminator: bool
   }
 
   return {
+    alt: value['alt'],
+    caption: value['caption'],
+    class: value['_class'],
+    height: value['height'],
     key: value['key'],
     last_modified: value['lastModified'],
     size: value['size'],
     storage_class: value['storageClass'],
     url: value['url'],
+    width: value['width'],
   };
 }
