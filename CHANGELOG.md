@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-10
+
 ### ⚠ BREAKING CHANGES
 
 - The API client is regenerated from the latest BeCraft OpenAPI spec. The
@@ -29,6 +31,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and a `bookmarkNodeRenderer` override is available via `HTMLRendererConfig`.
   Bookmarks without OGP metadata fall back to a plain anchor, matching the
   backend output.
+- Support for BeCraft **埋め込みタグ (embed tag)** sections. The parser detects
+  regions delimited by `<!-- #embedtag -->` / `<!-- /#embedtag -->` in the
+  delivery API html and produces a new `EmbedTagNode` holding the original
+  HTML. `BeCraftHTMLRenderer` renders it verbatim (attributes such as
+  `frameborder` / `referrerpolicy` are no longer dropped), and an
+  `embedTagNodeRenderer` override is available via `HTMLRendererConfig` for
+  embeds that need `<script>` execution. A start marker without a matching end
+  marker is not treated as a region.
 
 ### Removed
 
@@ -80,7 +90,8 @@ Previous releases are not documented here. See the
 [GitHub Releases](https://github.com/BeCraft-CMS/becraft-sdk/releases)
 page for release artifacts.
 
-[unreleased]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/BeCraft-CMS/becraft-sdk/releases/tag/v0.1.2
 [#2]: https://github.com/BeCraft-CMS/becraft-sdk/issues/2

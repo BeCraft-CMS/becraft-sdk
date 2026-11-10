@@ -41,6 +41,8 @@ const tags = await client.tag().get({ limit: 10, offset: 0 });
 `baseUrl` には BeCraft のオリジン（例: `https://your-becraft-api.com`）を指定する。
 SDK は配信 API の `/api/v1/contents` などのパスを付与してリクエストする。
 
+> **0.3.0 からの変更**: リクエスト先が `/api/...` から `/api/v1/...` に変わりました。`/api/v1` を提供しない旧バージョンの BeCraft には接続できません。
+
 ### HTML レンダリング
 
 SDK は BeCraft エディタからの HTML コンテンツを解析・レンダリングするためのユーティリティを提供しています。
