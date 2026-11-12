@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-12
+
 ### ⚠ BREAKING CHANGES
 
 - `content().get()` now returns `ApiContentListItem[]` instead of
@@ -33,7 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `category().findBySlug({ slug })` fetches a category by its slug
   (`GET /api/v1/categories/slug/{slug}`). Slugs are unique within a tenant.
 - `ApiContentListItem` is exported from the package entry.
-
 - Every `BeCraftClient` method accepts an optional second argument
   `options: BeCraftRequestOptions` with `signal?: AbortSignal`. Aborting the
   signal (e.g. `AbortSignal.timeout(ms)`) cancels the underlying HTTP request
@@ -121,7 +122,8 @@ Previous releases are not documented here. See the
 [GitHub Releases](https://github.com/BeCraft-CMS/becraft-sdk/releases)
 page for release artifacts.
 
-[unreleased]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/BeCraft-CMS/becraft-sdk/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/BeCraft-CMS/becraft-sdk/releases/tag/v0.1.2
