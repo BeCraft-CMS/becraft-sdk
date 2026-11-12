@@ -31,12 +31,6 @@ export interface GetCategoryQuery {
    * @memberof GetCategoryQuery
    */
   offset: number;
-  /**
-   * slug の完全一致で絞り込む
-   * @type {string}
-   * @memberof GetCategoryQuery
-   */
-  slug?: string | null;
 }
 
 /**
@@ -62,7 +56,6 @@ export function GetCategoryQueryFromJSONTyped(
   return {
     limit: json['limit'],
     offset: json['offset'],
-    slug: json['slug'] == null ? undefined : json['slug'],
   };
 }
 
@@ -81,6 +74,5 @@ export function GetCategoryQueryToJSONTyped(
   return {
     limit: value['limit'],
     offset: value['offset'],
-    slug: value['slug'],
   };
 }

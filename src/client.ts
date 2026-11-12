@@ -9,7 +9,6 @@ import type {
   FindTagRequest,
   CountTagsRequest,
   GetCategoriesRequest,
-  CountCategoriesRequest,
   FindCategoryRequest,
 } from './api';
 
@@ -108,10 +107,13 @@ class CategoryService {
     return call(options, (init) => this.client.getCategories(request, init));
   }
 
-  count(request: CountCategoriesRequest = {}, options?: BeCraftRequestOptions) {
-    return call(options, (init) => this.client.countCategories(request, init));
+  count(options?: BeCraftRequestOptions) {
+    return call(options, (init) => this.client.countCategories(init));
   }
 
+  /**
+   * `id` accepts a category ID (UUID) or a slug. A value that is not in UUID format is looked up as a slug.
+   */
   find(request: FindCategoryRequest, options?: BeCraftRequestOptions) {
     return call(options, (init) => this.client.findCategory(request, init));
   }

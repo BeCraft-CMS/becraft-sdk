@@ -64,16 +64,15 @@ describe('BeCraftClient request paths', () => {
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer test-key');
   });
 
-  it('passes slug to the category list and count endpoints', async () => {
-    fetchMock.mockResolvedValueOnce(jsonResponse([])).mockResolvedValueOnce(jsonResponse(1));
+  it('requests the category detail endpoint with a slug', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ id: 'c1', name: 'News', slug: 'news', is_published: true }),
+    );
 
-    await client.category().get({ offset: 0, limit: 1, slug: 'news' });
-    await client.category().count({ slug: 'news' });
+    const category = await client.category().find({ id: 'news' });
 
-    const urls = fetchMock.mock.calls.map(([url]) => new URL(url as string));
-    expect(urls[0].searchParams.get('slug')).toBe('news');
-    expect(urls[1].pathname).toBe('/api/v1/categories/count');
-    expect(urls[1].searchParams.get('slug')).toBe('news');
+    expect(requestedUrl().pathname).toBe('/api/v1/categories/news');
+    expect(category.slug).toBe('news');
   });
 
   it('passes select and status_keys to the related contents endpoint', async () => {

@@ -30,8 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `content().get()` accepts `select` and `order` (`updated_at_desc` (default)
   or `id_desc`).
 - `category().count()` (`GET /api/v1/categories/count`).
-- `category().get()` and `category().count()` accept `slug` to filter by an
-  exact slug match.
+- `category().find({ id })` accepts a category slug as well as an ID. A value
+  that is not in UUID format is looked up as a slug (slugs are unique within a
+  tenant).
 - `ApiContentListItem` is exported from the package entry.
 
 - Every `BeCraftClient` method accepts an optional second argument

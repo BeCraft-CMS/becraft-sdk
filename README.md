@@ -42,8 +42,10 @@ const content = await client.content().find({
 // カテゴリを取得
 const categories = await client.category().get({ limit: 10, offset: 0 });
 
-// スラッグでカテゴリを取得・件数を数える
-const [news] = await client.category().get({ limit: 1, offset: 0, slug: 'news' });
+// スラッグでカテゴリを取得（id に UUID 形式でない値を渡すとスラッグとして扱われる）
+const news = await client.category().find({ id: 'news' });
+
+// カテゴリの件数を数える
 const categoryCount = await client.category().count();
 
 // タグを取得
