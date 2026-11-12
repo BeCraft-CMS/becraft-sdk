@@ -20,9 +20,17 @@ const client = new BeCraftClient({
   apiKey: 'your-api-key',
 });
 
-// コンテンツを取得
+// コンテンツを取得（既定は基本項目のみ。本文 HTML などは select で指定する）
 const contents = await client.content().get({
   limit: 10,
+  offset: 0,
+  select: 'id,title,thumbnail,html',
+});
+
+// 関連コンテンツを取得（一覧と同じく select / statusKeys / order を指定できる）
+const related = await client.content().relations({
+  id: 'content-uuid',
+  limit: 5,
   offset: 0,
 });
 
@@ -33,6 +41,10 @@ const content = await client.content().find({
 
 // カテゴリを取得
 const categories = await client.category().get({ limit: 10, offset: 0 });
+
+// スラッグでカテゴリを取得・件数を数える
+const [news] = await client.category().get({ limit: 1, offset: 0, slug: 'news' });
+const categoryCount = await client.category().count();
 
 // タグを取得
 const tags = await client.tag().get({ limit: 10, offset: 0 });

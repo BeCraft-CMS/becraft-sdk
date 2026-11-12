@@ -2,6 +2,7 @@ apis/ApiCategoriesApi.ts
 apis/ApiContentsApi.ts
 apis/ApiTagsApi.ts
 index.ts
+models/ApiContentListItem.ts
 models/ApiContentResponse.ts
 models/Category.ts
 models/Content.ts

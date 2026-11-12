@@ -21,12 +21,6 @@ import { mapValues } from '../runtime';
 export interface CreateCategoryJson {
   /**
    *
-   * @type {string}
-   * @memberof CreateCategoryJson
-   */
-  apiIdentifier: string;
-  /**
-   *
    * @type {boolean}
    * @memberof CreateCategoryJson
    */
@@ -37,15 +31,21 @@ export interface CreateCategoryJson {
    * @memberof CreateCategoryJson
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateCategoryJson
+   */
+  slug: string;
 }
 
 /**
  * Check if a given object implements the CreateCategoryJson interface.
  */
 export function instanceOfCreateCategoryJson(value: object): value is CreateCategoryJson {
-  if (!('apiIdentifier' in value) || value['apiIdentifier'] === undefined) return false;
   if (!('isPublished' in value) || value['isPublished'] === undefined) return false;
   if (!('name' in value) || value['name'] === undefined) return false;
+  if (!('slug' in value) || value['slug'] === undefined) return false;
   return true;
 }
 
@@ -61,9 +61,9 @@ export function CreateCategoryJsonFromJSONTyped(
     return json;
   }
   return {
-    apiIdentifier: json['api_identifier'],
     isPublished: json['is_published'],
     name: json['name'],
+    slug: json['slug'],
   };
 }
 
@@ -80,8 +80,8 @@ export function CreateCategoryJsonToJSONTyped(
   }
 
   return {
-    api_identifier: value['apiIdentifier'],
     is_published: value['isPublished'],
     name: value['name'],
+    slug: value['slug'],
   };
 }

@@ -4,10 +4,12 @@ import type {
   GetContentsRequest,
   FindContentRequest,
   CountContentsRequest,
+  GetContentRelationsRequest,
   GetTagsRequest,
   FindTagRequest,
   CountTagsRequest,
   GetCategoriesRequest,
+  CountCategoriesRequest,
   FindCategoryRequest,
 } from './api';
 
@@ -89,6 +91,10 @@ class ContentService {
   find(request: FindContentRequest, options?: BeCraftRequestOptions) {
     return call(options, (init) => this.client.findContent(request, init));
   }
+
+  relations(request: GetContentRelationsRequest, options?: BeCraftRequestOptions) {
+    return call(options, (init) => this.client.getContentRelations(request, init));
+  }
 }
 
 class CategoryService {
@@ -100,6 +106,10 @@ class CategoryService {
 
   get(request: GetCategoriesRequest, options?: BeCraftRequestOptions) {
     return call(options, (init) => this.client.getCategories(request, init));
+  }
+
+  count(request: CountCategoriesRequest = {}, options?: BeCraftRequestOptions) {
+    return call(options, (init) => this.client.countCategories(request, init));
   }
 
   find(request: FindCategoryRequest, options?: BeCraftRequestOptions) {

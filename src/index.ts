@@ -6,6 +6,7 @@ export { ResponseError, FetchError } from './api/runtime';
 
 // API Types
 export type { ApiContentResponse } from './api/models/ApiContentResponse';
+export type { ApiContentListItem } from './api/models/ApiContentListItem';
 export type { Content } from './api/models/Content';
 export type { Category } from './api/models/Category';
 export type { Tag } from './api/models/Tag';

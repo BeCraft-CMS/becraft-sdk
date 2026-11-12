@@ -23,6 +23,10 @@ import {
   UpdateCategoryJsonToJSON,
 } from '../models/index';
 
+export interface CountCategoriesRequest {
+  slug?: string | null;
+}
+
 export interface CreateCategoryRequest {
   createCategoryJson: CreateCategoryJson;
 }
@@ -38,6 +42,7 @@ export interface FindCategoryRequest {
 export interface GetCategoriesRequest {
   offset: number;
   limit: number;
+  slug?: string | null;
 }
 
 export interface UpdateCategoryRequest {
@@ -52,9 +57,14 @@ export class ApiCategoriesApi extends runtime.BaseAPI {
   /**
    */
   async countCategoriesRaw(
+    requestParameters: CountCategoriesRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<number>> {
     const queryParameters: any = {};
+
+    if (requestParameters['slug'] != null) {
+      queryParameters['slug'] = requestParameters['slug'];
+    }
 
     const headerParameters: runtime.HTTPHeaders = {};
 
@@ -80,9 +90,10 @@ export class ApiCategoriesApi extends runtime.BaseAPI {
   /**
    */
   async countCategories(
+    requestParameters: CountCategoriesRequest = {},
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<number> {
-    const response = await this.countCategoriesRaw(initOverrides);
+    const response = await this.countCategoriesRaw(requestParameters, initOverrides);
     return await response.value();
   }
 
@@ -244,6 +255,10 @@ export class ApiCategoriesApi extends runtime.BaseAPI {
 
     if (requestParameters['limit'] != null) {
       queryParameters['limit'] = requestParameters['limit'];
+    }
+
+    if (requestParameters['slug'] != null) {
+      queryParameters['slug'] = requestParameters['slug'];
     }
 
     const headerParameters: runtime.HTTPHeaders = {};
