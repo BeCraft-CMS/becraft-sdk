@@ -53,6 +53,11 @@ describe('BeCraftClient request options', () => {
       [],
     ],
     ['category().count', (o: { signal: AbortSignal }) => client.category().count(o), 0],
+    [
+      'category().findBySlug',
+      (o: { signal: AbortSignal }) => client.category().findBySlug({ slug: 'news' }, o),
+      {},
+    ],
     ['category().find', (o: { signal: AbortSignal }) => client.category().find({ id: 'x' }, o), {}],
     ['tag().get', (o: { signal: AbortSignal }) => client.tag().get({ offset: 0, limit: 1 }, o), []],
     ['tag().count', (o: { signal: AbortSignal }) => client.tag().count({}, o), 0],

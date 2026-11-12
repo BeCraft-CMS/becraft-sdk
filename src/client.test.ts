@@ -64,14 +64,14 @@ describe('BeCraftClient request paths', () => {
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer test-key');
   });
 
-  it('requests the category detail endpoint with a slug', async () => {
+  it('requests the category slug endpoint', async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({ id: 'c1', name: 'News', slug: 'news', is_published: true }),
     );
 
-    const category = await client.category().find({ id: 'news' });
+    const category = await client.category().findBySlug({ slug: 'news' });
 
-    expect(requestedUrl().pathname).toBe('/api/v1/categories/news');
+    expect(requestedUrl().pathname).toBe('/api/v1/categories/slug/news');
     expect(category.slug).toBe('news');
   });
 
