@@ -4,6 +4,7 @@ apis/*
 !apis/ApiTagsApi.ts
 
 models/*
+!models/ApiContentListItem.ts
 !models/ApiContentResponse.ts
 !models/GetCategoryQuery.ts
 !models/Category.ts

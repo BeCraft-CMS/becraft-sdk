@@ -32,11 +32,18 @@ describe('BeCraftClient request paths', () => {
     ['content().get', () => client.content().get({ offset: 0, limit: 10 }), '/api/v1/contents', []],
     ['content().count', () => client.content().count({}), '/api/v1/contents/count', 0],
     [
+      'content().relations',
+      () => client.content().relations({ id: 'c1', offset: 0, limit: 10 }),
+      '/api/v1/contents/c1/relations',
+      [],
+    ],
+    [
       'category().get',
       () => client.category().get({ offset: 0, limit: 10 }),
       '/api/v1/categories',
       [],
     ],
+    ['category().count', () => client.category().count(), '/api/v1/categories/count', 0],
     ['tag().get', () => client.tag().get({ offset: 0, limit: 10 }), '/api/v1/tags', []],
     ['tag().count', () => client.tag().count({}), '/api/v1/tags/count', 0],
   ])('%s requests %s', async (_name, call, path, body) => {
@@ -55,6 +62,29 @@ describe('BeCraftClient request paths', () => {
 
     const init = fetchMock.mock.calls[0][1] as RequestInit;
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer test-key');
+  });
+
+  it('requests the category slug endpoint', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ id: 'c1', name: 'News', slug: 'news', is_published: true }),
+    );
+
+    const category = await client.category().findBySlug({ slug: 'news' });
+
+    expect(requestedUrl().pathname).toBe('/api/v1/categories/slug/news');
+    expect(category.slug).toBe('news');
+  });
+
+  it('passes select and status_keys to the related contents endpoint', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse([{ id: 'c2', title: 't' }]));
+
+    const contents = await client
+      .content()
+      .relations({ id: 'c1', offset: 0, limit: 10, select: 'id,title', statusKeys: 'Published' });
+
+    expect(requestedUrl().searchParams.get('select')).toBe('id,title');
+    expect(requestedUrl().searchParams.get('status_keys')).toBe('Published');
+    expect(contents).toEqual([{ id: 'c2', title: 't' }]);
   });
 
   it('passes draft_key to the content detail endpoint', async () => {

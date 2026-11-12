@@ -24,12 +24,6 @@ export interface Category {
    * @type {string}
    * @memberof Category
    */
-  apiIdentifier: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Category
-   */
   id: string;
   /**
    *
@@ -43,16 +37,22 @@ export interface Category {
    * @memberof Category
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Category
+   */
+  slug: string;
 }
 
 /**
  * Check if a given object implements the Category interface.
  */
 export function instanceOfCategory(value: object): value is Category {
-  if (!('apiIdentifier' in value) || value['apiIdentifier'] === undefined) return false;
   if (!('id' in value) || value['id'] === undefined) return false;
   if (!('isPublished' in value) || value['isPublished'] === undefined) return false;
   if (!('name' in value) || value['name'] === undefined) return false;
+  if (!('slug' in value) || value['slug'] === undefined) return false;
   return true;
 }
 
@@ -65,10 +65,10 @@ export function CategoryFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     return json;
   }
   return {
-    apiIdentifier: json['api_identifier'],
     id: json['id'],
     isPublished: json['is_published'],
     name: json['name'],
+    slug: json['slug'],
   };
 }
 
@@ -85,9 +85,9 @@ export function CategoryToJSONTyped(
   }
 
   return {
-    api_identifier: value['apiIdentifier'],
     id: value['id'],
     is_published: value['isPublished'],
     name: value['name'],
+    slug: value['slug'],
   };
 }

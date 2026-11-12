@@ -21,12 +21,6 @@ import { mapValues } from '../runtime';
 export interface UpdateCategoryJson {
   /**
    *
-   * @type {string}
-   * @memberof UpdateCategoryJson
-   */
-  apiIdentifier?: string | null;
-  /**
-   *
    * @type {boolean}
    * @memberof UpdateCategoryJson
    */
@@ -37,6 +31,12 @@ export interface UpdateCategoryJson {
    * @memberof UpdateCategoryJson
    */
   name?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateCategoryJson
+   */
+  slug?: string | null;
 }
 
 /**
@@ -58,9 +58,9 @@ export function UpdateCategoryJsonFromJSONTyped(
     return json;
   }
   return {
-    apiIdentifier: json['api_identifier'] == null ? undefined : json['api_identifier'],
     isPublished: json['is_published'] == null ? undefined : json['is_published'],
     name: json['name'] == null ? undefined : json['name'],
+    slug: json['slug'] == null ? undefined : json['slug'],
   };
 }
 
@@ -77,8 +77,8 @@ export function UpdateCategoryJsonToJSONTyped(
   }
 
   return {
-    api_identifier: value['apiIdentifier'],
     is_published: value['isPublished'],
     name: value['name'],
+    slug: value['slug'],
   };
 }

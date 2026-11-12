@@ -13,8 +13,15 @@
  */
 
 import * as runtime from '../runtime';
-import type { ApiContentResponse, CreateContentJson, UpdateContentJson } from '../models/index';
+import type {
+  ApiContentListItem,
+  ApiContentResponse,
+  CreateContentJson,
+  UpdateContentJson,
+} from '../models/index';
 import {
+  ApiContentListItemFromJSON,
+  ApiContentListItemToJSON,
   ApiContentResponseFromJSON,
   ApiContentResponseToJSON,
   CreateContentJsonFromJSON,
@@ -28,6 +35,7 @@ export interface CountContentsRequest {
   categoryId?: string | null;
   tags?: string | null;
   relationSourceContentId?: string | null;
+  statusKeys?: string | null;
 }
 
 export interface CreateContentRequest {
@@ -43,6 +51,15 @@ export interface FindContentRequest {
   draftKey?: string | null;
 }
 
+export interface GetContentRelationsRequest {
+  id: string;
+  offset: number;
+  limit: number;
+  statusKeys?: string | null;
+  select?: string | null;
+  order?: string;
+}
+
 export interface GetContentsRequest {
   offset: number;
   limit: number;
@@ -51,6 +68,8 @@ export interface GetContentsRequest {
   tags?: string | null;
   relationSourceContentId?: string | null;
   statusKeys?: string | null;
+  select?: string | null;
+  order?: string;
 }
 
 export interface UpdateContentRequest {
@@ -84,6 +103,10 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
     if (requestParameters['relationSourceContentId'] != null) {
       queryParameters['relation_source_content_id'] = requestParameters['relationSourceContentId'];
+    }
+
+    if (requestParameters['statusKeys'] != null) {
+      queryParameters['status_keys'] = requestParameters['statusKeys'];
     }
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -257,10 +280,89 @@ export class ApiContentsApi extends runtime.BaseAPI {
 
   /**
    */
+  async getContentRelationsRaw(
+    requestParameters: GetContentRelationsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<Array<ApiContentListItem>>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling getContentRelations().',
+      );
+    }
+
+    if (requestParameters['offset'] == null) {
+      throw new runtime.RequiredError(
+        'offset',
+        'Required parameter "offset" was null or undefined when calling getContentRelations().',
+      );
+    }
+
+    if (requestParameters['limit'] == null) {
+      throw new runtime.RequiredError(
+        'limit',
+        'Required parameter "limit" was null or undefined when calling getContentRelations().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    if (requestParameters['offset'] != null) {
+      queryParameters['offset'] = requestParameters['offset'];
+    }
+
+    if (requestParameters['limit'] != null) {
+      queryParameters['limit'] = requestParameters['limit'];
+    }
+
+    if (requestParameters['statusKeys'] != null) {
+      queryParameters['status_keys'] = requestParameters['statusKeys'];
+    }
+
+    if (requestParameters['select'] != null) {
+      queryParameters['select'] = requestParameters['select'];
+    }
+
+    if (requestParameters['order'] != null) {
+      queryParameters['order'] = requestParameters['order'];
+    }
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    let urlPath = `/api/v1/contents/{id}/relations`;
+    urlPath = urlPath.replace(`{${'id'}}`, encodeURIComponent(String(requestParameters['id'])));
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      jsonValue.map(ApiContentListItemFromJSON),
+    );
+  }
+
+  /**
+   */
+  async getContentRelations(
+    requestParameters: GetContentRelationsRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<Array<ApiContentListItem>> {
+    const response = await this.getContentRelationsRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
+
+  /**
+   */
   async getContentsRaw(
     requestParameters: GetContentsRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<Array<ApiContentResponse>>> {
+  ): Promise<runtime.ApiResponse<Array<ApiContentListItem>>> {
     if (requestParameters['offset'] == null) {
       throw new runtime.RequiredError(
         'offset',
@@ -305,6 +407,14 @@ export class ApiContentsApi extends runtime.BaseAPI {
       queryParameters['status_keys'] = requestParameters['statusKeys'];
     }
 
+    if (requestParameters['select'] != null) {
+      queryParameters['select'] = requestParameters['select'];
+    }
+
+    if (requestParameters['order'] != null) {
+      queryParameters['order'] = requestParameters['order'];
+    }
+
     const headerParameters: runtime.HTTPHeaders = {};
 
     let urlPath = `/api/v1/contents`;
@@ -320,7 +430,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
     );
 
     return new runtime.JSONApiResponse(response, (jsonValue) =>
-      jsonValue.map(ApiContentResponseFromJSON),
+      jsonValue.map(ApiContentListItemFromJSON),
     );
   }
 
@@ -329,7 +439,7 @@ export class ApiContentsApi extends runtime.BaseAPI {
   async getContents(
     requestParameters: GetContentsRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<Array<ApiContentResponse>> {
+  ): Promise<Array<ApiContentListItem>> {
     const response = await this.getContentsRaw(requestParameters, initOverrides);
     return await response.value();
   }

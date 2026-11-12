@@ -35,6 +35,10 @@ export interface FindCategoryRequest {
   id: string;
 }
 
+export interface FindCategoryBySlugRequest {
+  slug: string;
+}
+
 export interface GetCategoriesRequest {
   offset: number;
   limit: number;
@@ -213,6 +217,49 @@ export class ApiCategoriesApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<Category> {
     const response = await this.findCategoryRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
+
+  /**
+   */
+  async findCategoryBySlugRaw(
+    requestParameters: FindCategoryBySlugRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<Category>> {
+    if (requestParameters['slug'] == null) {
+      throw new runtime.RequiredError(
+        'slug',
+        'Required parameter "slug" was null or undefined when calling findCategoryBySlug().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    let urlPath = `/api/v1/categories/slug/{slug}`;
+    urlPath = urlPath.replace(`{${'slug'}}`, encodeURIComponent(String(requestParameters['slug'])));
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) => CategoryFromJSON(jsonValue));
+  }
+
+  /**
+   */
+  async findCategoryBySlug(
+    requestParameters: FindCategoryBySlugRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<Category> {
+    const response = await this.findCategoryBySlugRaw(requestParameters, initOverrides);
     return await response.value();
   }
 
