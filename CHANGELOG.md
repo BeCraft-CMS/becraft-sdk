@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ⚠ BREAKING CHANGES
+
+- `content().get()` now returns `ApiContentListItem[]` instead of
+  `ApiContentResponse[]`. By default the backend returns only the basic fields
+  (`id`, `title`, `status_key`, `status_name`, `is_public`, `published_at`,
+  `custom_url`, `categories`, `tags`, `thumbnail`, `created_at`, `updated_at`);
+  `html`, `seo`, `custom_parameters`, `related_content_ids`, `created_by` and
+  `updated_by` are returned only when listed in the new `select` parameter
+  (e.g. `select: 'id,title,html'`). Every field of `ApiContentListItem` is
+  optional.
+- The category field `apiIdentifier` (`api_identifier`) is renamed to `slug`
+  on `Category`, `CreateCategoryJson` and `UpdateCategoryJson`, following the
+  backend.
+
+### Added
+
+- `content().relations({ id, offset, limit })` fetches the contents related to
+  a content (`GET /api/v1/contents/{id}/relations`). It accepts the same
+  `statusKeys` / `select` / `order` as `content().get()` and returns
+  `ApiContentListItem[]`.
+- `content().get()` accepts `select` and `order` (`updated_at_desc` (default)
+  or `id_desc`).
+- `category().count()` (`GET /api/v1/categories/count`).
+- `category().findBySlug({ slug })` fetches a category by its slug
+  (`GET /api/v1/categories/slug/{slug}`). Slugs are unique within a tenant.
+- `ApiContentListItem` is exported from the package entry.
+
+- Every `BeCraftClient` method accepts an optional second argument
+  `options: BeCraftRequestOptions` with `signal?: AbortSignal`. Aborting the
+  signal (e.g. `AbortSignal.timeout(ms)`) cancels the underlying HTTP request
+  instead of only abandoning the promise. The promise rejects with the
+  signal's reason (`AbortError` / `TimeoutError`), as `fetch` does, rather than
+  a `FetchError`.
+- `ResponseError` and `FetchError` are exported from the package entry so that
+  callers can distinguish non-2xx responses (`response.status`) from requests
+  that never got a response.
+
 ## [0.3.0] - 2026-11-10
 
 ### ⚠ BREAKING CHANGES

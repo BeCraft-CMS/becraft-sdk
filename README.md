@@ -20,9 +20,17 @@ const client = new BeCraftClient({
   apiKey: 'your-api-key',
 });
 
-// コンテンツを取得
+// コンテンツを取得（既定は基本項目のみ。本文 HTML などは select で指定する）
 const contents = await client.content().get({
   limit: 10,
+  offset: 0,
+  select: 'id,title,thumbnail,html',
+});
+
+// 関連コンテンツを取得（一覧と同じく select / statusKeys / order を指定できる）
+const related = await client.content().relations({
+  id: 'content-uuid',
+  limit: 5,
   offset: 0,
 });
 
@@ -34,6 +42,12 @@ const content = await client.content().find({
 // カテゴリを取得
 const categories = await client.category().get({ limit: 10, offset: 0 });
 
+// スラッグでカテゴリを取得
+const news = await client.category().findBySlug({ slug: 'news' });
+
+// カテゴリの件数を数える
+const categoryCount = await client.category().count();
+
 // タグを取得
 const tags = await client.tag().get({ limit: 10, offset: 0 });
 ```
@@ -42,6 +56,30 @@ const tags = await client.tag().get({ limit: 10, offset: 0 });
 SDK は配信 API の `/api/v1/contents` などのパスを付与してリクエストする。
 
 > **0.3.0 からの変更**: リクエスト先が `/api/...` から `/api/v1/...` に変わりました。`/api/v1` を提供しない旧バージョンの BeCraft には接続できません。
+
+### タイムアウトとキャンセル
+
+各メソッドは第 2 引数で `signal` を受け付ける。シグナルが中断されると HTTP リクエスト自体が切断される（待つのをやめるだけではない）。
+
+```ts
+import { FetchError, ResponseError } from '@becraft/sdk';
+
+try {
+  const contents = await client
+    .content()
+    .get({ limit: 10, offset: 0 }, { signal: AbortSignal.timeout(5000) });
+} catch (e) {
+  if (e instanceof DOMException && e.name === 'TimeoutError') {
+    // AbortSignal.timeout による中断（AbortController.abort() の場合は AbortError）
+  } else if (e instanceof ResponseError) {
+    // 2xx 以外の応答。e.response.status で 4xx / 5xx を判別できる
+  } else if (e instanceof FetchError) {
+    // ネットワークエラーなど、応答を受け取れなかった。e.cause に元のエラー
+  }
+}
+```
+
+中断時は `fetch` と同じくシグナルの `reason`（`AbortError` / `TimeoutError`）で reject し、`FetchError` には包まない。
 
 ### HTML レンダリング
 
@@ -93,16 +131,23 @@ npm install linkedom
 ### BeCraftClient
 
 - `content()` - コンテンツサービス
-  - `get(request)` - コンテンツ一覧を取得
-  - `find(request)` - ID でコンテンツを検索
-  - `count(request)` - コンテンツ数をカウント
+  - `get(request, options?)` - コンテンツ一覧を取得
+  - `find(request, options?)` - ID でコンテンツを検索
+  - `count(request, options?)` - コンテンツ数をカウント
 - `category()` - カテゴリサービス
-  - `get(request)` - カテゴリ一覧を取得
-  - `find(request)` - ID でカテゴリを検索
+  - `get(request, options?)` - カテゴリ一覧を取得
+  - `find(request, options?)` - ID でカテゴリを検索
 - `tag()` - タグサービス
-  - `get(request)` - タグ一覧を取得
-  - `find(request)` - ID でタグを検索
-  - `count(request)` - タグ数をカウント
+  - `get(request, options?)` - タグ一覧を取得
+  - `find(request, options?)` - ID でタグを検索
+  - `count(request, options?)` - タグ数をカウント
+
+`options` は `BeCraftRequestOptions`（`{ signal?: AbortSignal }`）。
+
+### エラー
+
+- `ResponseError` - 2xx 以外の応答（`response` を保持）
+- `FetchError` - 応答を受け取れなかった（`cause` に元のエラー）。中断時はこれではなく `AbortError` / `TimeoutError`
 
 ### HTML ユーティリティ
 
